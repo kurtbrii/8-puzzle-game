@@ -1,11 +1,12 @@
+from settings import *
 from tiles import Tiles
 
 
 # terminal functions
-def readFile():
+def readFile(filename):
     list = []
     # from https://stackoverflow.com/questions/61617165/input-data-from-file-to-2d-array-in-python
-    with open("src/read.in", "r") as file:
+    with open(filename, "r") as file:
         for line in file:
             newList = line.split()
             newList = [
@@ -34,10 +35,10 @@ def winnerCheck(list):
         return list == sorted(list)
 
 
-def textDisplay(font, text, color, WIN_WIDTH):
+def textDisplay(font, text, color, WIN_WIDTH, WIN_HEIGHT, height):
     text = font.render(text, True, color)
     textRect = text.get_rect()
-    textRect.center = (WIN_WIDTH // 2, 25)
+    textRect.center = (WIN_WIDTH // 2 - WIN_HEIGHT // 2, height)
 
     return text, textRect
 
@@ -52,7 +53,7 @@ def getInversionCount(list):
         for j in range(i + 1, 8):
             if newList[i] > newList[j]:
                 inversionCount += 1
-    print(inversionCount)
+
     return inversionCount
 
 
@@ -64,6 +65,7 @@ def addTiles():
     # y coordinate will start at 50; x at 0
     # instantiate objects reflecting terminal_array (storage from read.in) in app.py
     # taking note of their positions on screen
+
     tiles_list = []
 
     y_pos = 45
@@ -77,14 +79,6 @@ def addTiles():
         tiles_list.append(new_list)
 
     return tiles_list
-
-
-def printTiles(tiles_list, terminal_list, screen, TILE_COLOR, FONT_COLOR):
-    for i in range(3):
-        for j in range(3):
-            if terminal_list[i][j] != 0:
-                tile = tiles_list[i][j]
-                tile.drawTile(screen, terminal_list, i, j, TILE_COLOR, FONT_COLOR)
 
 
 def swapCells(list, i, j, row_clicked, col_clicked):
