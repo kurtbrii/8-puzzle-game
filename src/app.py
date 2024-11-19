@@ -1,12 +1,14 @@
 # Punzalan, Kurt Brian Daine B. Punzalan
 # 2020-00772
 # CMSC 170 X-4L
-# Exer 01
+# Exer 03
 
 import os
+from tkinter import filedialog as fd
 
 import pygame
 
+from a_star_func import *
 from bfs_dfs import *
 from gameplay_functions import *
 from settings import *
@@ -15,7 +17,7 @@ os.system("cls")
 
 # MAIN FILE
 terminal_list = []
-terminal_list = readFile()
+terminal_list = readFile("src/read.in")
 
 tiles_list = []
 tiles_list = addTiles()
@@ -40,6 +42,7 @@ is_solvable = True
 if not isSolvable(terminal_list):
     is_solvable = False
 
+is_file_dialog = False
 is_path_seen = False
 is_next_running = False
 is_playable = True
@@ -109,22 +112,64 @@ while is_running:
         screen.blit(path_list_text, path_list_rect)
 
     # BFS-DFS Specs
+    select_file = Button(400, 245, "Select File")
+    select_file.drawTile(screen, PINK_100, BLACK)
+
     solution = Button(400, 285, "Solution")
     solution.drawTile(screen, PINK_100, BLACK)
 
     bfs = Button(400, 50, "BFS")
     dfs = Button(400, 90, "DFS")
-    clickedBfsDfs(screen, dfs, bfs, PINK_100, PINK_100, BLACK, BLACK)
+    a_star = Button(400, 130, "A*")
+    clickedBfsDfs(
+        screen, dfs, bfs, a_star, PINK_100, PINK_100, BLACK, BLACK, BLACK, PINK_100
+    )
 
     next = Button(400, 325, "Next")
     if is_next_running:
         next.drawTile(screen, PINK_100, BLACK)
 
-    if is_bfs_clicked == "1":
-        clickedBfsDfs(screen, dfs, bfs, PINK_50, PINK_100, BLACK_50, BLACK)
+    if is_bfs_clicked == "1":  # bfs button clicked
+        clickedBfsDfs(
+            screen,
+            dfs,
+            bfs,
+            a_star,
+            PINK_50,
+            PINK_100,
+            BLACK_50,
+            BLACK,
+            BLACK,
+            PINK_100,
+        )
 
-    elif is_bfs_clicked == "2":
-        clickedBfsDfs(screen, dfs, bfs, PINK_100, PINK_50, BLACK_50, BLACK_50)
+    elif is_bfs_clicked == "2":  # dfs button clicked
+        clickedBfsDfs(
+            screen,
+            dfs,
+            bfs,
+            a_star,
+            PINK_100,
+            PINK_50,
+            BLACK_50,
+            BLACK_50,
+            BLACK,
+            PINK_100,
+        )
+
+    elif is_bfs_clicked == "3":  # a_star button clicked
+        clickedBfsDfs(
+            screen,
+            dfs,
+            bfs,
+            a_star,
+            PINK_100,
+            PINK_100,
+            BLACK,
+            BLACK,
+            BLACK_50,
+            PINK_50,
+        )
 
     # GAMEPLAY
     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -161,6 +206,16 @@ while is_running:
 
             else:  # specification for BFS and DFS
                 # click whether user wants to solve using dfs or bfs
+                if select_file.isClicked(x, y):
+                    try:
+                        filename = fd.askopenfilename()
+
+                        terminal_list = readFile(filename)
+                        is_file_dialog = True
+                        print(filename)
+                    except:
+                        print("Invalid file")
+
                 if dfs.isClicked(x, y):
                     is_bfs_clicked = "2"
                     print(f"Checking for the solution using {dfs.name}")
@@ -171,13 +226,23 @@ while is_running:
                     print(f"Checking for the solution using {bfs.name}")
                     to_be_solved = "bfs"
 
+                elif a_star.isClicked(x, y):
+                    is_bfs_clicked = "3"
+                    print(f"Checking for the solution using {a_star.name}")
+                    to_be_solved = "a_star"
+
                 # When solution button is clicked and bfs or dfs is selected
                 if solution.isClicked(x, y) and (
-                    to_be_solved == "bfs" or to_be_solved == "dfs"
+                    to_be_solved == "bfs"
+                    or to_be_solved == "dfs"
+                    or to_be_solved == "a_star"
                 ):
                     is_playable = False  # user cannot play anymore
 
-                    terminal_list = readFile()  # resets the board
+                    if is_file_dialog:
+                        terminal_list = readFile(filename)  # resets the board
+                    else:
+                        terminal_list = readFile("src/read.in")  # resets the board
 
                     # user cannot choose bfs or dfs if the puzzle is not solvable
                     if not isSolvable(terminal_list):
@@ -187,14 +252,18 @@ while is_running:
                         is_next_running = True
 
                         i, j = findEmptyCell(terminal_list)
-                        initial = Node(terminal_list, i, j, None, None)
+                        initial = Node(terminal_list, i, j, None, None, 0, 0, 0)
 
                         if (
                             to_be_solved == "bfs"
                         ):  # inset at the first index, remove at the last index
                             currentState = BFS_DFS(initial, 0)
-                        else:  # insert at the last index, remove at the last index
+                        elif (
+                            to_be_solved == "dfs"
+                        ):  # insert at the last index, remove at the last index
                             currentState = BFS_DFS(initial, -1)
+                        else:  # A*
+                            currentState = AStar(initial)
 
                         # returns the list of actions as well as the path cost
                         actions_string_list, path_cost = findPath(currentState)

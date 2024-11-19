@@ -29,3 +29,6 @@ Run the app with `rye run start`. Use the interface to click/move the tiles. You
 
 ### BFS/DFS
 ![ScreenShot](/src/assets/screenshots/bfs-dfs.png)
+
+### A-Star
+![ScreenShot](/src/assets/screenshots/a-star.png)

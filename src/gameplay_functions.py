@@ -3,10 +3,10 @@ from tiles import Tiles
 
 
 # terminal functions
-def readFile():
+def readFile(filename):
     list = []
     # from https://stackoverflow.com/questions/61617165/input-data-from-file-to-2d-array-in-python
-    with open("src/read.in", "r") as file:
+    with open(filename, "r") as file:
         for line in file:
             newList = line.split()
             newList = [
