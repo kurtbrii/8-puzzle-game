@@ -24,4 +24,8 @@ Run the app with `rye run start`. Use the interface to click/move the tiles. You
 - Detect if the puzzle is solvable or not
 
 ## Screenshots
+### Base Game
 ![ScreenShot](/src/assets/screenshots/puzzle.png)
+
+### BFS/DFS
+![ScreenShot](/src/assets/screenshots/bfs-dfs.png)
